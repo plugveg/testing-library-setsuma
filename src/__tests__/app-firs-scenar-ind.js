@@ -33,7 +33,6 @@ describe('Premier scénario : cas passant', () => {
 
   test('5-6 - After clicking "Fill out the form", we have been redirected to page-1 and the heading is "Page 1"', async () => {
     await waitFor(() => {
-      console.log(window.location.href)
       expect(window.location.href).toContain('/page-1')
     })
     const heading = screen.getByRole('heading', {name: /Page 1/i})
@@ -65,7 +64,6 @@ describe('Premier scénario : cas passant', () => {
 
   test('12 - User is redirected to page 2', async () => {
     await waitFor(() => {
-      console.log(window.location.href)
       expect(window.location.href).toContain('/page-2')
     })
   })
@@ -170,7 +168,6 @@ describe('Premier scénario : cas passant', () => {
   })
 
   test('31 - User is redirected to the home page', async () => {
-    // Assuming that the URL changes to "/home" when the user is redirected to the home page
     await waitFor(() => {
       expect(window.location.href).toContain('/')
     })
