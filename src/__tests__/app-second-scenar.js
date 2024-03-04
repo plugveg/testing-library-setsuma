@@ -15,10 +15,12 @@ beforeEach(() => {
       <App />
     </BrowserRouter>,
   )
-  submitForm.mockResolvedValue({message: 'Form submitted succesfully'})
+  submitForm.mockRejectedValue({
+    message: 'les champs food et drink sont obligatoires',
+  })
 })
 
-test('Premier scénario : cas passant', async () => {
+test('Deuxième Scénario : cas non passant', async () => {
   // 1-2 - On App page, a title "Welcome home" is rendered
   expect(screen.getByRole('heading')).toHaveTextContent(/Welcome home/i)
 
@@ -40,10 +42,10 @@ test('Premier scénario : cas passant', async () => {
   expect(linkElement2).toBeInTheDocument()
   expect(inputElement).toBeInTheDocument()
 
-  // 9 - User fills the field with "Les pâtes"
+  // 9 - User fills the field with ""
   const inputElement2 = screen.getByLabelText(/Favorite Food/i)
-  userEvent.type(inputElement2, 'Les pâtes')
-  expect(inputElement.value).toBe('Les pâtes')
+  userEvent.type(inputElement2, '')
+  expect(inputElement.value).toBe('')
 
   // 10 - A link "Next" is in the document
   const linkElement3 = screen.getByRole('link', {name: /Next/i})
@@ -94,12 +96,10 @@ test('Premier scénario : cas passant', async () => {
   const textElement = screen.getByText(/Please confirm your choices/i)
   expect(textElement).toBeInTheDocument()
 
-  // 22 - A text label "favorite food" has content "Les pâtes"
+  // 22 - A text label "favorite food" has content ""
   // eslint-disable-next-line testing-library/await-async-utils
   waitFor(() =>
-    expect(screen.getByLabelText('Favorite Food')).toHaveTextContent(
-      'Les pâtes',
-    ),
+    expect(screen.getByLabelText('Favorite Food')).toHaveTextContent(''),
   )
 
   // 23 - A text label "favorite drink" has content "Bière"
@@ -119,30 +119,38 @@ test('Premier scénario : cas passant', async () => {
   // 26 - User clicks on the button "Confirm"
   userEvent.click(buttonElement)
 
-  // 27 - User is redirected to the congratulations page
+  // 27 - User is redirected to the error page
   await waitFor(() => {
-    expect(window.location.href).toContain('/success')
+    expect(window.location.href).toContain('/error')
   })
 
-  // 28 - A heading "Congrats. You did it." is in the document
-  const heading4 = await screen.findByRole('heading', {
-    name: /Congrats\. You did it\./i,
+  // 28 - A heading "Oh no. There was an error." is in the document
+  await waitFor(() => {
+    expect(screen.getByText(/Oh no. There was an error./i)).toBeInTheDocument()
   })
-  expect(heading4).toBeInTheDocument()
 
-  // 29 - A link "Go home" is in the document
+  // 29 - A text "les champs food et drink sont obligatoires" is in the document
+  expect(
+    screen.getByText(/les champs food et drink sont obligatoires/i),
+  ).toBeInTheDocument()
+
+  // 30 - A link "Go home" is in the document
   const linkElement9 = screen.getByRole('link', {name: /Go home/i})
   expect(linkElement9).toBeInTheDocument()
 
-  // 30 - User clicks on the link "Go Home"
-  userEvent.click(linkElement9)
+  // 31 - A link "Try again" is in the document
+  const linkElement10 = screen.getByRole('link', {name: /Try again/i})
+  expect(linkElement10).toBeInTheDocument()
 
-  // 31 - User is redirected to the home page
+  // 32 - User clicks on the link "Try again"
+  userEvent.click(linkElement10)
+
+  // 33 - User is redirected to page-1
   await waitFor(() => {
-    expect(window.location.href).toContain('/')
+    expect(window.location.href).toContain('/page-1')
   })
 
-  // 32 - A heading "Welcome home" is in the document
-  const heading5 = await screen.findByRole('heading', {name: /Welcome home/i})
-  expect(heading5).toBeInTheDocument()
+  // 34 - A heading "Page 1" is in the document
+  const heading4 = screen.getByRole('heading', {name: /Page 1/i})
+  expect(heading4).toBeInTheDocument()
 })
